@@ -117,5 +117,5 @@ class ChatbotBackend:
         """
         # print(prompt)
         response = self.answer_prompt(prompt)
-        print(f"{response}")
+        # print(f"{response}")
         return response['generated_text']
