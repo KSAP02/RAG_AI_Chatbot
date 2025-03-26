@@ -30,33 +30,39 @@ st.title("Document Chabot")
 # Sidebar with document upload
 with st.sidebar:
     st.header("Upload Documents")
-    
     uploaded_file = st.file_uploader("Add documents to chat with",
                                      type=["pdf"])
-
     if uploaded_file:
-        with st.spinner("Processing document..."):
-            # Extract text from document
-            
-            # Avoiding top level code(adding imports at the top),
-            # so the same lib/file is not imported everytime streamlit is interacted with
-            
-            # Dynamically retrieveing the function without explicitly specifying at the top imports
-            
-            document_processor = importlib.import_module("document_processor")
-            documents = document_processor.extract_text_from_file(uploaded_file)
-            
-            if documents:
-                document_text = documents[0].page_content
-            
-            # Chunk the document text
-            chunks, metadatas = document_processor.chunk_text(documents)
-            st.write("Received the chunks")
-            
-            # Add documents to the chatbot
-            st.session_state.chatbot.create_vector_store(chunks, metadatas)
-            # st.write(len(embeddings))
-            st.success(f"Document processed: {uploaded_file.name}")
+        file_name = uploaded_file.name
+
+        if "processed_file" not in st.session_state or st.session_state.processed_file != file_name:
+            with st.spinner("Processing document..."):
+                # Extract text from document
+                
+                # Avoiding top level code(adding imports at the top),
+                # so the same lib/file is not imported everytime streamlit is interacted with
+                
+                # Dynamically retrieveing the function without explicitly specifying at the top imports
+                
+                document_processor = importlib.import_module("document_processor")
+                st.session_state.documents = document_processor.extract_text_from_file(uploaded_file)
+                # print(st.session_state.documents)
+                
+                if st.session_state.documents:
+                    document_text = st.session_state.documents[0].page_content
+                
+                # Chunk the document text
+                st.session_state.chunks, st.session_state.metadatas = document_processor.chunk_text(st.session_state.documents)
+                st.write("Received the chunks")
+                
+                # Add documents to the chatbot
+                st.session_state.chatbot.create_vector_store(st.session_state.chunks, st.session_state.metadatas)
+                # st.write(len(embeddings))
+                
+                # Mark the files as processed
+                st.session_state.processed_file = file_name
+                
+                st.success(f"Document processed: {file_name}")
             
     # Settings
     st.header("Settings")
@@ -96,7 +102,7 @@ if user_input:
         with st.spinner("Thinking..."):
             response = st.session_state.chatbot.get_answer(
                 user_input,
-                chunks,
+                st.session_state.chunks,
                 use_context=use_context
             )
         

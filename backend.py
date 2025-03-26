@@ -42,6 +42,7 @@ class ChatbotBackend:
     
     def create_vector_store(self, chunks, metadatas):
         
+        # print(chunks)
         embeddings = self.get_embeddings(chunks)
         
         dimension = len(embeddings[0])
