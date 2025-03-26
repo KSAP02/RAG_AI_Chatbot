@@ -42,6 +42,7 @@ with st.sidebar:
             # so the same lib/file is not imported everytime streamlit is interacted with
             
             # Dynamically retrieveing the function without explicitly specifying at the top imports
+            
             document_processor = importlib.import_module("document_processor")
             documents = document_processor.extract_text_from_file(uploaded_file)
             

@@ -1,8 +1,11 @@
 import io
 import fitz
+import streamlit as st
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+
+@st.cache_data
 def extract_text_from_file(uploaded_file):
     print("Processing Document...")
         
